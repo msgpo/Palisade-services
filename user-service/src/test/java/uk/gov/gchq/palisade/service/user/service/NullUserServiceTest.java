@@ -16,27 +16,27 @@
 
 package uk.gov.gchq.palisade.service.user.service;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import uk.gov.gchq.palisade.User;
 import uk.gov.gchq.palisade.service.user.exception.NoSuchUserIdException;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NullUserServiceTest {
     NullUserService nullUserService = new NullUserService();
 
-    @Test(expected = NoSuchUserIdException.class)
+    @Test
     public void getUser() {
         User user = new User().userId("testUser");
-        nullUserService.getUser(user.getUserId());
+        assertThrows(NoSuchUserIdException.class, () -> nullUserService.getUser(user.getUserId()));
     }
 
     @Test
     public void addUser() {
         User user = new User().userId("testUser");
         User actual = nullUserService.addUser(user);
-        assertThat(user, is(actual));
+        assertEquals(user, actual);
     }
 }

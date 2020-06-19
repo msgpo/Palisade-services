@@ -22,12 +22,13 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import uk.gov.gchq.palisade.RequestId;
 import uk.gov.gchq.palisade.User;
@@ -44,16 +45,17 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-@RunWith(JUnit4.class)
+@SpringBootTest
+@TestInstance(Lifecycle.PER_CLASS)
 public class UserControllerTest {
     public final UserController userController = new UserController(new MockUserService(), new StdUserConfiguration());
 
     private Logger logger;
     private ListAppender<ILoggingEvent> appender;
 
-    @Before
+    @BeforeAll
     public void setup() {
         logger = (Logger) LoggerFactory.getLogger(UserController.class);
         appender = new ListAppender<>();
@@ -61,7 +63,7 @@ public class UserControllerTest {
         logger.addAppender(appender);
     }
 
-    @After
+    @AfterAll
     public void tearDown() {
         logger.detachAppender(appender);
         appender.stop();

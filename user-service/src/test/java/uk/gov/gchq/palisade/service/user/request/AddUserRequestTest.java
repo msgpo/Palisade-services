@@ -24,12 +24,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import uk.gov.gchq.palisade.RequestId;
 import uk.gov.gchq.palisade.User;
@@ -40,19 +41,18 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-@RunWith(JUnit4.class)
+@SpringBootTest
+@TestInstance(Lifecycle.PER_CLASS)
 public class AddUserRequestTest {
     public final ObjectMapper mapper = new ObjectMapper();
 
     private Logger logger;
     private ListAppender<ILoggingEvent> appender;
 
-    @Before
+    @BeforeAll
     public void setup() {
         logger = (Logger) LoggerFactory.getLogger(AddUserRequest.class);
         appender = new ListAppender<>();
@@ -60,7 +60,7 @@ public class AddUserRequestTest {
         logger.addAppender(appender);
     }
 
-    @After
+    @AfterAll
     public void tearDown() {
         logger.detachAppender(appender);
         appender.stop();
@@ -77,7 +77,7 @@ public class AddUserRequestTest {
     @Test
     public void AddUserRequestTest() {
         final AddUserRequest subject = AddUserRequest.create(new RequestId().id("newId")).withUser(new User().userId("newUser"));
-        assertThat("AddUserRequest not constructed", subject.user.getUserId().getId(), is(equalTo("newUser")));
+        assertEquals(subject.user.getUserId().getId(), "newUser", "AddUserRequest not constructed");
 
         List<String> debugMessages = getMessages(event -> event.getLevel() == Level.DEBUG);
         assertNotEquals(0, debugMessages.size());
@@ -96,7 +96,7 @@ public class AddUserRequestTest {
         final JsonNode asNode = this.mapper.readTree(this.mapper.writeValueAsString(subject));
         final Iterable<String> iterable = asNode::fieldNames;
 
-        assertThat("AddUserRequest not parsed to json", StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.joining(", ")), is(equalTo("originalRequestId, user, id")));
+        assertEquals(StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.joining(", ")), "originalRequestId, user, id", "AddUserRequest not parsed to json");
     }
 
     @Test
@@ -109,6 +109,6 @@ public class AddUserRequestTest {
 
         final AddUserRequest result = this.mapper.readValue(jsonString, AddUserRequest.class);
 
-        assertThat("AddUserRequest could not be parsed from json string", subject.user, is(equalTo(new User().userId("user"))));
+        assertEquals(subject.user, new User().userId("user"), "AddUserRequest could not be parsed from json string");
     }
 }

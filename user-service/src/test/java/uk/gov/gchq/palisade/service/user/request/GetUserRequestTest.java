@@ -25,12 +25,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import uk.gov.gchq.palisade.RequestId;
 import uk.gov.gchq.palisade.UserId;
@@ -44,16 +45,18 @@ import java.util.stream.StreamSupport;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-@RunWith(JUnit4.class)
+
+@SpringBootTest
+@TestInstance(Lifecycle.PER_CLASS)
 public class GetUserRequestTest {
     public final ObjectMapper mapper = new ObjectMapper();
 
     private Logger logger;
     private ListAppender<ILoggingEvent> appender;
 
-    @Before
+    @BeforeAll
     public void setup() {
         logger = (Logger) LoggerFactory.getLogger(GetUserRequest.class);
         appender = new ListAppender<>();
@@ -61,7 +64,7 @@ public class GetUserRequestTest {
         logger.addAppender(appender);
     }
 
-    @After
+    @AfterAll
     public void tearDown() {
         logger.detachAppender(appender);
         appender.stop();
@@ -73,7 +76,6 @@ public class GetUserRequestTest {
                 .map(ILoggingEvent::getFormattedMessage)
                 .collect(Collectors.toList());
     }
-
 
 
     @Test
