@@ -21,22 +21,65 @@ import org.junit.jupiter.api.Test;
 import uk.gov.gchq.palisade.User;
 import uk.gov.gchq.palisade.service.user.exception.NoSuchUserIdException;
 
+import java.util.Collections;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NullUserServiceTest {
     NullUserService nullUserService = new NullUserService();
 
     @Test
-    public void getUser() {
+    public void noSuchUserFoundTest() {
         User user = new User().userId("testUser");
-        assertThrows(NoSuchUserIdException.class, () -> nullUserService.getUser(user.getUserId()));
+        Exception noSuchUserId = assertThrows(NoSuchUserIdException.class, () -> nullUserService.getUser(user.getUserId()));
+        assertEquals("No userId matching UserId[id='testUser'] found in cache", noSuchUserId.getMessage());
     }
 
     @Test
-    public void addUser() {
+    void groupedAddUserAssertions() {
         User user = new User().userId("testUser");
         User actual = nullUserService.addUser(user);
-        assertEquals(user, actual, "Messages are now the final parameter");
+        Set<String> expectedRoles = Collections.emptySet();
+        assertAll("userID",
+                () -> assertEquals(user, actual, "User should match actual"),
+                () -> assertEquals(expectedRoles, actual.getRoles(), "Roles should be empty")
+        );
     }
+
+    @Test
+    public void groupedDependantAddUserAssertion() {
+        assertAll("properties",
+                () -> {
+                    User user = new User().userId("testUser");
+                    User actual = nullUserService.addUser(user);
+                    Set<String> expectedRoles = Collections.emptySet();
+                    assertNotNull(actual, "created user should not be null");
+
+                    // Executed only if the previous assertion is valid.
+                    assertAll("userID",
+                            () -> assertEquals(user, actual, "User should match actual"),
+                            () -> assertEquals(expectedRoles, actual.getRoles(), "Roles should be empty")
+                    );
+                },
+                () -> {
+                    // Grouped assertion, so processed independently
+                    // of results of first name assertions.
+                    User user = new User().userId("newUser");
+                    User actual = nullUserService.addUser(user);
+                    Set<String> expectedAuths = Collections.emptySet();
+                    assertNotNull(actual, "created user should not be null");
+
+                    // Executed only if the previous assertion is valid.
+                    assertAll("userID",
+                            () -> assertEquals(user, actual, "User should match actual"),
+                            () -> assertEquals(expectedAuths, actual.getAuths(), "Auths should be empty")
+                    );
+                }
+        );
+    }
+
 }
