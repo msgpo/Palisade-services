@@ -37,6 +37,6 @@ public class NullUserServiceTest {
     public void addUser() {
         User user = new User().userId("testUser");
         User actual = nullUserService.addUser(user);
-        assertEquals(user, actual);
+        assertEquals(user, actual, "Messages are now the final parameter");
     }
 }
