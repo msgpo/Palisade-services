@@ -42,10 +42,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS)
@@ -79,21 +80,41 @@ public class UserControllerTest {
     @Test
     public void addAndGetUser() {
         User user = new User().userId("add-user-request-id").addAuths(Collections.singleton("authorisation")).addRoles(Collections.singleton("role"));
-        AddUserRequest addUserRequest = AddUserRequest.create(new RequestId().id("addUserRequest")).withUser(user);
-        Boolean addedUser = userController.addUserRequest(addUserRequest);
+        assertAll("addAndGetUser",
+                () -> {
+                    AddUserRequest addUserRequest = AddUserRequest.create(new RequestId().id("addUserRequest")).withUser(user);
+                    assertTrue(userController.addUserRequest(addUserRequest));
 
-        assertThat(true, is(equalTo(addedUser)));
+                    // Executed only if the previous assertion is valid.
+                    assertAll("addUserRequest",
+                            () -> assertNotNull(user.getAuths(), "User auths should not be null"),
+                            () -> assertNotNull(user.getRoles(), "User roles should be not be null")
+                    );
+                },
+                () -> {
+                    // Grouped assertion, so processed independently
+                    // of results of first name assertions.
+                    GetUserRequest getUserRequest = GetUserRequest.create(new RequestId().id("getUserRequest")).withUserId(user.getUserId());
+                    User expected = userController.getUserRequest(getUserRequest);
+                    assertEquals(user, expected);
 
-        GetUserRequest getUserRequest = GetUserRequest.create(new RequestId().id("getUserRequest")).withUserId(user.getUserId());
-        User expected = userController.getUserRequest(getUserRequest);
-        assertThat(user, is(equalTo(expected)));
-
-        List<String> debugMessages = getMessages(event -> event.getLevel() == Level.INFO);
-        assertNotEquals(0, debugMessages.size());
-        MatcherAssert.assertThat(debugMessages, Matchers.hasItems(
-                Matchers.containsString("Invoking AddUserRequest:"),
-                Matchers.anyOf(
-                        Matchers.containsString("Invoking GetUserRequest: GetUserRequest"))
-        ));
+                    // Executed only if the previous assertion is valid.
+                    assertAll("getUserRequest",
+                            () -> assertEquals(user.getAuths(), expected.getAuths(), "Auths should match"),
+                            () -> assertEquals(user.getRoles(), expected.getRoles(), "Roles should match")
+                    );
+                },
+                () -> {
+                    // Grouped assertion, so processed independently
+                    // of results of first name assertions.
+                    List<String> debugMessages = getMessages(event -> event.getLevel() == Level.INFO);
+                    assertNotEquals(0, debugMessages.size());
+                    MatcherAssert.assertThat(debugMessages, Matchers.hasItems(
+                            Matchers.containsString("Invoking AddUserRequest:"),
+                            Matchers.anyOf(
+                                    Matchers.containsString("Invoking GetUserRequest: GetUserRequest"))
+                    ));
+                }
+        );
     }
 }
