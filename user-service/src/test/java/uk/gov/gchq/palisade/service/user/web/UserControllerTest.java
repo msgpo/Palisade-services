@@ -22,8 +22,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -56,7 +56,7 @@ public class UserControllerTest {
     private Logger logger;
     private ListAppender<ILoggingEvent> appender;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         logger = (Logger) LoggerFactory.getLogger(UserController.class);
         appender = new ListAppender<>();
@@ -64,7 +64,7 @@ public class UserControllerTest {
         logger.addAppender(appender);
     }
 
-    @AfterAll
+    @AfterEach
     public void tearDown() {
         logger.detachAppender(appender);
         appender.stop();

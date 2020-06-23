@@ -25,8 +25,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -56,7 +56,7 @@ public class GetUserRequestTest {
     private Logger logger;
     private ListAppender<ILoggingEvent> appender;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         logger = (Logger) LoggerFactory.getLogger(GetUserRequest.class);
         appender = new ListAppender<>();
@@ -64,7 +64,7 @@ public class GetUserRequestTest {
         logger.addAppender(appender);
     }
 
-    @AfterAll
+    @AfterEach
     public void tearDown() {
         logger.detachAppender(appender);
         appender.stop();

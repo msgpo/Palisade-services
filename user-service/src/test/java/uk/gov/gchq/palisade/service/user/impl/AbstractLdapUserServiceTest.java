@@ -24,8 +24,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Sets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -67,7 +67,7 @@ public class AbstractLdapUserServiceTest {
     private Logger logger;
     private ListAppender<ILoggingEvent> appender;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         logger = (Logger) LoggerFactory.getLogger(AbstractLdapUserService.class);
         appender = new ListAppender<>();
@@ -75,7 +75,7 @@ public class AbstractLdapUserServiceTest {
         logger.addAppender(appender);
     }
 
-    @AfterAll
+    @AfterEach
     public void tearDown() {
         logger.detachAppender(appender);
         appender.stop();
