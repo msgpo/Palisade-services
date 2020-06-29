@@ -83,7 +83,7 @@ public class UserControllerTest {
         assertAll("addAndGetUser",
                 () -> {
                     AddUserRequest addUserRequest = AddUserRequest.create(new RequestId().id("addUserRequest")).withUser(user);
-                    assertTrue(userController.addUserRequest(addUserRequest));
+                    assertTrue(userController.addUserRequest(addUserRequest), "addUserRequest should return True as it is successful when adding a user");
 
                     // Executed only if the previous assertion is valid.
                     assertAll("addUserRequest",
@@ -96,7 +96,7 @@ public class UserControllerTest {
                     // of results of first name assertions.
                     GetUserRequest getUserRequest = GetUserRequest.create(new RequestId().id("getUserRequest")).withUserId(user.getUserId());
                     User expected = userController.getUserRequest(getUserRequest);
-                    assertEquals(user, expected);
+                    assertEquals(user, expected, "the returned user should be the same as the added user");
 
                     // Executed only if the previous assertion is valid.
                     assertAll("getUserRequest",
@@ -108,7 +108,7 @@ public class UserControllerTest {
                     // Grouped assertion, so processed independently
                     // of results of first name assertions.
                     List<String> debugMessages = getMessages(event -> event.getLevel() == Level.INFO);
-                    assertNotEquals(0, debugMessages.size());
+                    assertNotEquals(0, debugMessages.size(), "There should be info messages in the logger");
                     MatcherAssert.assertThat(debugMessages, Matchers.hasItems(
                             Matchers.containsString("Invoking AddUserRequest:"),
                             Matchers.anyOf(
