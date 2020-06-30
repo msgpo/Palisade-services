@@ -33,14 +33,14 @@ public class NullUserServiceTest {
     NullUserService nullUserService = new NullUserService();
 
     @Test
-    public void noSuchUserFoundTest() {
+    public void testNoSuchUserFound() {
         User user = new User().userId("testUser");
         Exception noSuchUserId = assertThrows(NoSuchUserIdException.class, () -> nullUserService.getUser(user.getUserId()), "NullUserService should throw a NoSuchUserIdException");
         assertEquals("No userId matching UserId[id='testUser'] found in cache", noSuchUserId.getMessage(), "The Exception message should return the id of testUser");
     }
 
     @Test
-    void groupedAddUserAssertions() {
+    void testGroupedAddUserAssertions() {
         User user = new User().userId("testUser");
         User actual = nullUserService.addUser(user);
         Set<String> expectedRoles = Collections.emptySet();
@@ -51,7 +51,7 @@ public class NullUserServiceTest {
     }
 
     @Test
-    public void groupedDependantAddUserAssertion() {
+    public void testGroupedDependantAddUserAssertion() {
         assertAll("properties",
                 () -> {
                     User user = new User().userId("testUser");
