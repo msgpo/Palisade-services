@@ -39,7 +39,7 @@ global:
 
   kafka:
     # install: install kafka streaming platform
-    install: true
+    install: false
   redis:
     # install: install redis persistence and caching data storage platform
     install: false
