@@ -39,7 +39,7 @@ global:
 
   kafka:
     # install: install kafka streaming platform
-    install: false
+    install: true
   redis:
     # install: install redis persistence and caching data storage platform
     install: false
@@ -128,6 +128,7 @@ global:
         aws: efs-sc
       name: kafka-persistence
       storage: 9Gi
+<<<<<<< HEAD
       local:
         hostPath: "/"
       aws:
@@ -142,12 +143,31 @@ global:
         aws: efs-sc
       name: zookeeper-persistence
       storage: 8Gi
+=======
+>>>>>>> develop
       local:
         hostPath: "/"
       aws:
         volumeHandle: null
         volumePath: "/"
 
+<<<<<<< HEAD
+=======
+    # zookeeper: Store used by zookeeper for persisting stream logs
+    zookeeper:
+      storageClassName:
+        _default: hostpath
+        local: hostpath
+        aws: efs-sc
+      name: zookeeper-persistence
+      storage: 8Gi
+      local:
+        hostPath: "/"
+      aws:
+        volumeHandle: null
+        volumePath: "/"
+
+>>>>>>> develop
 
     # redis: Store used by redis and redis-cluster for persistence and caching
     redisMaster:
